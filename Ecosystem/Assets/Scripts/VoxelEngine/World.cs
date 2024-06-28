@@ -18,6 +18,7 @@ namespace VoxelEngine
         private int RHeight => height * chunkSize;
         [SerializeField] private int blockSize = 1;
         private bool started = false;
+        private bool dirtyChunks = false;
     
         private List<List<Vector3>> floodFill = new List<List<Vector3>>();
 
@@ -45,7 +46,7 @@ namespace VoxelEngine
         // Update is called once per frame
         void Update()
         {
-        
+            if(dirtyChunks) RebuildDirtyChunks();
         }
     
         private void CreateChunks() 
@@ -640,9 +641,7 @@ namespace VoxelEngine
 
         public void AddBlock(int _x, int _y, int _z, int _color)
         {
-            if(_x < 0 || _y < 0 || _z < 0 || _x > width*chunkSize-1 || _y > height*chunkSize-1 || _z > depth*chunkSize-1) {
-                return;
-            }
+            if (!IsWithinWorld(_x, _y, _z)) return;
             if(blocks[_x, _y, _z] == 0) {
                 blocks [_x, _y, _z] = _color; 
             }
@@ -650,6 +649,18 @@ namespace VoxelEngine
             var chunk = GetChunk(_x, _y, _z);
             if (chunk is not {Dirty: false}) return;
             chunk.Dirty = true;
+            dirtyChunks = true;
+            rebuildList.Add (chunk);
+        }
+
+        public void RemoveBlock(int _x, int _y, int _z)
+        {
+            if (!IsWithinWorld(_x, _y, _z)) return;
+            blocks[_x, _y, _z] = 0;
+            var chunk = GetChunk(_x, _y, _z);
+            if (chunk is not {Dirty: false}) return;
+            chunk.Dirty = true;
+            dirtyChunks = true;
             rebuildList.Add (chunk);
         }
 
