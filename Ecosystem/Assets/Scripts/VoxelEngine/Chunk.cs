@@ -11,26 +11,25 @@ namespace VoxelEngine
         [SerializeField] private MeshCollider meshCollider;
         [SerializeField] private Rigidbody rBody;
         
-        public const int TypeWorld = 0;
-        public const int TypeFf = 1;
-        public const int TypeObj = 2;
+        [HideInInspector] public const int TypeWorld = 0;
+        [HideInInspector] public const int TypeFf = 1;
+        [HideInInspector] public const int TypeObj = 2;
 
-        public GameObject Obj => gameObject;
-        public int FromX = 0;
-        public int FromZ = 0;
-        public int FromY = 0;
-        public int ToX = 0;
-        public int ToZ = 0;
-        public int ToY = 0;
-        public int Type = TypeWorld;
-        public bool Dirty = false;
-        public bool FfActive = false;
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public int TotalBlocksFf = 0;
-        private int noOfCollisions = 0;
+        [HideInInspector] public int FromX = 0;
+        [HideInInspector] public int FromZ = 0;
+        [HideInInspector] public int FromY = 0;
+        [HideInInspector] public int ToX = 0;
+        [HideInInspector] public int ToZ = 0;
+        [HideInInspector] public int ToY = 0;
+        [HideInInspector] public int Type = TypeWorld;
+        [HideInInspector] public bool Dirty = false;
+        [HideInInspector] public bool FfActive = false;
+        [HideInInspector] public Vector3 Position;
+        [HideInInspector] public Quaternion Rotation;
+        [HideInInspector] public int TotalBlocksFf = 0;
+        [HideInInspector] private int noOfCollisions = 0;
 
-        public int[,,] Blocks;
+        [HideInInspector] public int[,,] Blocks;
 
         public void InitializeAsWorld(int _x, int _y, int _z, int _fromX, int _fromY, int _fromZ, int _toX, int _toY, int _toZ)
         {
@@ -67,8 +66,9 @@ namespace VoxelEngine
             ToX = _width;
             ToY = _height;
             ToZ = _depth;
+            Blocks = new int[_width, _height, _depth];
             Type = TypeObj;
-            gameObject.name = "OBJ_CHUNK";
+            // gameObject.name = "OBJ_CHUNK";
         }
 
         public void SetMass(float _value)

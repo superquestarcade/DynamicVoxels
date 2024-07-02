@@ -2,13 +2,18 @@ using UnityEngine;
 using System;
 using Input;
 using UnityEngine.Serialization;
+using Metatron.Utilities;
 
 namespace Player
 {
-    public class PlayerController3pp : MonoBehaviourPlus
+    public class PlayerController : MonoBehaviourPlus
     {
+        [SerializeField] private Transform playerCamTransform;
+        
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private Vector2 lookSpeed = Vector2.one;
+        [SerializeField] private float minVerticalLook = -60f;
+        [SerializeField] private float maxVerticalLook = 60f;
         [SerializeField] private bool invertMouseY = true;
         [SerializeField] private float stableMovementSharpness = 18f;
         [SerializeField] private float dragFactorStatValue = 0.5f;
@@ -278,10 +283,19 @@ namespace Player
         private void UpdateRotation()
         {
             // Calculate the rotation amount based on the mouse input and rotation speed
-            var rotationAmount = lookInputVector.x * lookSpeed.x * Time.deltaTime;
+            var horizontalRotation = lookInputVector.x * lookSpeed.x * Time.deltaTime;
 
             // Apply the rotation to the transform around the Vector.up axis
-            transform.Rotate(Vector3.up, rotationAmount);
+            transform.Rotate(Vector3.up, horizontalRotation);
+
+            var verticalRotationDelta = lookInputVector.y * lookSpeed.y * Time.deltaTime;
+            if (Mathf.Abs(verticalRotationDelta) <= 0.001f) return;
+            var currentPlayerVertRotation = playerCamTransform.rotation.eulerAngles.x;
+            var rotationDegrees = (currentPlayerVertRotation + verticalRotationDelta).ClampAngle();
+            var clampedVertRotation = rotationDegrees.ClampAngle(minVerticalLook, maxVerticalLook);
+            if(debugLevel>DebugLevel.Moderate) Debug.Log($"PlayerController.UpdateRotation currentPlayerVertRotation {currentPlayerVertRotation}, " +
+                                                          $"verticalRotationDelta {verticalRotationDelta}, clampedVertRotation {clampedVertRotation}");
+            playerCamTransform.SetLocalPositionAndRotation(playerCamTransform.localPosition, Quaternion.Euler(clampedVertRotation,0,0));
         }
     }
 }

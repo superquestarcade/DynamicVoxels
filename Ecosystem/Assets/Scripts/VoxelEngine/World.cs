@@ -210,14 +210,14 @@ namespace VoxelEngine
 
                                 for(var x_ = x; x_ < _chunk.ToX; x_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x_, y, z] & 0x80) == 0 && SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x_, y, z] & 0x80) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
                                         maxX++;
                                     } else {
                                         break;
                                     }
                                     var tmpZ = 0;
                                     for (var z_ = z; z_ < _chunk.ToZ; z_++) {
-                                        if ((blocks_ [x_, y, z_] & 0x80) == 0 && SameColor (blocks_ [x_, y, z_], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x_, y, z_] & 0x80) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z_], blocks_ [x, y, z])) {
                                             tmpZ++;
                                         } else {
                                             break;
@@ -274,14 +274,14 @@ namespace VoxelEngine
 
                                 for (var x_ = x; x_ < _chunk.ToX; x_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x_, y, z] & 0x2) == 0 && SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x_, y, z] & 0x2) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
                                         maxX++;
                                     } else {
                                         break;
                                     }
                                     var tmpZ = 0;
                                     for (var z_ = z; z_ < _chunk.ToZ; z_++) {
-                                        if ((blocks_ [x_, y, z_] & 0x2) == 0 && SameColor (blocks_ [x_, y, z_], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x_, y, z_] & 0x2) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z_], blocks_ [x, y, z])) {
                                             tmpZ++;
                                         } else {
                                             break;
@@ -339,14 +339,14 @@ namespace VoxelEngine
 
                                 for (var x_ = x; x_ < _chunk.ToX; x_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x_, y, z] & 0x10) == 0 && SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x_, y, z] & 0x10) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
                                         maxX++;
                                     } else {
                                         break;
                                     }
                                     var tmpY = 0;
                                     for (var y_ = y; y_ < _chunk.ToY; y_++) {
-                                        if ((blocks_ [x_, y_, z] & 0x10) == 0 && SameColor (blocks_ [x_, y_, z], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x_, y_, z] & 0x10) == 0 && VoxelSystem.SameColor (blocks_ [x_, y_, z], blocks_ [x, y, z])) {
                                             tmpY++;
                                         } else {
                                             break;
@@ -403,14 +403,14 @@ namespace VoxelEngine
 
                                 for (var x_ = x; x_ < _chunk.ToX; x_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x_, y, z] & 0x1) == 0 && SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x_, y, z] & 0x1) == 0 && VoxelSystem.SameColor (blocks_ [x_, y, z], blocks_ [x, y, z])) {
                                         maxX++;
                                     } else {
                                         break;
                                     }
                                     var tmpY = 0;
                                     for (var y_ = y; y_ < _chunk.ToY; y_++) {
-                                        if ((blocks_ [x_, y_, z] & 0x1) == 0 && SameColor (blocks_ [x_, y_, z], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x_, y_, z] & 0x1) == 0 && VoxelSystem.SameColor (blocks_ [x_, y_, z], blocks_ [x, y, z])) {
                                             tmpY++;
                                         } else {
                                             break;
@@ -465,14 +465,14 @@ namespace VoxelEngine
 
                                 for (var z_ = z; z_ < _chunk.ToZ; z_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x, y, z_] & 0x8) == 0 && SameColor (blocks_ [x, y, z_], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x, y, z_] & 0x8) == 0 && VoxelSystem.SameColor (blocks_ [x, y, z_], blocks_ [x, y, z])) {
                                         maxZ++;
                                     } else {
                                         break;
                                     }
                                     var tmpY = 0;
                                     for (var y_ = y; y_ < _chunk.ToY; y_++) {
-                                        if ((blocks_ [x, y_, z_] & 0x8) == 0 && SameColor (blocks_ [x, y_, z_], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x, y_, z_] & 0x8) == 0 && VoxelSystem.SameColor (blocks_ [x, y_, z_], blocks_ [x, y, z])) {
                                             tmpY++;
                                         } else {
                                             break;
@@ -528,14 +528,14 @@ namespace VoxelEngine
 
                                 for (var z_ = z; z_ < _chunk.ToZ; z_++) {
                                     // Check not drawn + same color
-                                    if ((blocks_ [x, y, z_] & 0x4) == 0 && SameColor (blocks_ [x, y, z_], blocks_ [x, y, z])) {
+                                    if ((blocks_ [x, y, z_] & 0x4) == 0 && VoxelSystem.SameColor (blocks_ [x, y, z_], blocks_ [x, y, z])) {
                                         maxZ++;
                                     } else {
                                         break;
                                     }
                                     var tmpY = 0;
                                     for (var y_ = y; y_ < _chunk.ToY; y_++) {
-                                        if ((blocks_ [x, y_, z_] & 0x4) == 0 && SameColor (blocks_ [x, y_, z_], blocks_ [x, y, z])) {
+                                        if ((blocks_ [x, y_, z_] & 0x4) == 0 && VoxelSystem.SameColor (blocks_ [x, y_, z_], blocks_ [x, y, z])) {
                                             tmpY++;
                                         } else {
                                             break;
@@ -596,7 +596,6 @@ namespace VoxelEngine
                 }*/
                 if (_chunk.Type == Chunk.TypeFf) _chunk.SetMass(0.1f * vertices.Count);
             }
-            // Todo: I changed out this code below for a mesh update method inside the chunk & it isn't working
             _chunk.SetMesh(vertices.ToArray(), tri.ToArray(), colors.ToArray());
             
             /*_chunk.Obj.GetComponent<Renderer> ().enabled = false;
@@ -634,10 +633,10 @@ namespace VoxelEngine
                    _z > 0 && _z < depth*chunkSize;
         }
     
-        private bool SameColor(int _block1, int _block2)
+        /*private bool SameColor(int _block1, int _block2)
         {
             return ((_block1 >> 8) & 0xFFFFFF) == ((_block2 >> 8) & 0xFFFFFF) && _block1 != 0 && _block2 != 0;
-        }
+        }*/
 
         public void AddBlock(int _x, int _y, int _z, int _color)
         {
