@@ -1,0 +1,16 @@
+{
+    "name": "EcoSys.VoxelEngine",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ddbe1440a16e26242aac5a02e5e29b95"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

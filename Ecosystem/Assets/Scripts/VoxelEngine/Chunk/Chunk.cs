@@ -6,6 +6,7 @@ namespace VoxelEngine
 {
     public class Chunk : MonoBehaviourPlus
     {
+        #region Parameters
         [SerializeField] private MeshRenderer meshRenderer;
         [SerializeField] private MeshFilter meshFilter;
         [SerializeField] private MeshCollider meshCollider;
@@ -30,7 +31,11 @@ namespace VoxelEngine
         [HideInInspector] private int noOfCollisions = 0;
 
         [HideInInspector] public int[,,] Blocks;
-
+        private Vector3Int localPosOffset = Vector3Int.zero;
+        public Vector3Int LocalPosOffset => localPosOffset;
+        #endregion
+        
+        #region Initialize
         public void InitializeAsWorld(int _x, int _y, int _z, int _fromX, int _fromY, int _fromZ, int _toX, int _toY, int _toZ)
         {
             var mats = new Material[1];
@@ -60,22 +65,43 @@ namespace VoxelEngine
             meshRenderer.materials = mats;
             //this.obj.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard (Vertex Color)");
             meshRenderer.material.EnableKeyword("_VERTEXCOLOR");
-            FromX = 0;
-            FromY = 0;
-            FromZ = 0;
-            ToX = _width;
-            ToY = _height;
-            ToZ = _depth;
+            FromX = -_width/2;
+            FromY = -_height/2;
+            FromZ = -_depth/2;
+            ToX = _width/2;
+            ToY = _height/2;
+            ToZ = _depth/2;
+            localPosOffset = new Vector3Int(_width / 2, _height / 2, _depth / 2);
             Blocks = new int[_width, _height, _depth];
             Type = TypeObj;
+            Debug.LogWarning($"{gameObject.name}.Chunk.InitializeAsObject FromX {FromX} ToX {ToX}, " +
+                             $"FromY {FromY} ToY {ToY}, FromZ {FromZ} ToZ {ToZ}, ");
             // gameObject.name = "OBJ_CHUNK";
         }
+        #endregion
+        
+        #region Blocks
 
-        public void SetMass(float _value)
+        public void SetBlockLocal(int _x, int _y, int _z, int _color)
         {
-            rBody.mass = _value;
+            try
+            {
+                Debug.Log($"Chunk.SetBlockLocal block ({_x + localPosOffset.x}, {_y +localPosOffset.y}, {_z + localPosOffset.z}) " +
+                          $"from local position ({_x}, {_y}, {_z}), color {_color}");
+                Blocks[_x + localPosOffset.x, _y +localPosOffset.y, _z + localPosOffset.z] = _color;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Chunk.SetBlockLocal exception {e}, " +
+                               $"unable to set block ({_x + localPosOffset.x}, {_y +localPosOffset.y}, {_z + localPosOffset.z}) " +
+                               $"from local position ({_x}, {_y}, {_z}), color {_color}");
+            }
+            
         }
-
+        
+        #endregion
+        
+        #region Mesh
         public void SetMesh(Vector3[] _vertices, int[] _tris, Color32[] _colors)
         {
             meshRenderer.enabled = false;
@@ -89,6 +115,14 @@ namespace VoxelEngine
             meshRenderer.enabled = true;
             Dirty = false;
             meshCollider.sharedMesh = mesh;
+        }
+        #endregion
+        
+        #region Physics
+
+        public void SetMass(float _value)
+        {
+            rBody.mass = _value;
         }
 
         public void EnablePhys() 
@@ -154,17 +188,7 @@ namespace VoxelEngine
             //		}
             //}
         }*/
-
-        public void EnableObject(int _width, int _height, int _depth) 
-        {
-            gameObject.name = "OBJ_CHUNK";
-            this.Blocks = new int[_width+1, _height+1, _depth+1];
-            this.FromX = 0;
-            this.FromY = 0;
-            this.FromZ = 0;
-            this.ToX = _width;
-            this.ToY = _height;
-            this.ToZ = _depth;
-        }
+        
+        #endregion
     }
 }

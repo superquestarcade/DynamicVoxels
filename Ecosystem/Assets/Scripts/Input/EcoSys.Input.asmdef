@@ -1,0 +1,17 @@
+{
+    "name": "EcoSys.Input",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ddbe1440a16e26242aac5a02e5e29b95",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

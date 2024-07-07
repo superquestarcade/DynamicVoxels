@@ -31,8 +31,9 @@ namespace VoxelEngine
 
 		private void AddSeedling()
 		{
-			var startPoint = new Vector3Int(Mathf.RoundToInt(bounds.x / 2f), 0, Mathf.RoundToInt(bounds.z / 2f));
-			Blocks[startPoint.x, startPoint.y, startPoint.z] = WorldColors.stemColor;
+			var startPoint = Vector3Int.zero;
+			SetBlockLocal(startPoint.x, startPoint.y, startPoint.z, WorldColors.stemColor);
+			// Blocks[startPoint.x, startPoint.y, startPoint.z] = WorldColors.stemColor;
 			previousGrowthPoint = startPoint;
 			this.RebuildChunk(blockSize);
 		}
@@ -55,7 +56,9 @@ namespace VoxelEngine
 				growthPoint = previousGrowthPoint.Adjacent();
 				growthColor = WorldColors.flowerStemColor;
 			}
-			Blocks[growthPoint.x, growthPoint.y, growthPoint.z] = growthColor;
+
+			SetBlockLocal(growthPoint.x, growthPoint.y, growthPoint.z, growthColor);
+			// Blocks[growthPoint.x, growthPoint.y, growthPoint.z] = growthColor;
 			this.RebuildChunk(blockSize);
 			lastGrowthTime = Time.time;
 		}
@@ -63,7 +66,8 @@ namespace VoxelEngine
 		private void OnDrawGizmosSelected()
 		{
 			Gizmos.color = Color.green;
-			Gizmos.DrawWireCube(transform.position, bounds);
+			var blockPosOffset = new Vector3((FromX + ToX) / 2f, (FromY + ToY) / 2f, (FromZ + ToZ) / 2f);
+			Gizmos.DrawWireCube(transform.position + blockPosOffset, bounds);
 		}
 	}
 }

@@ -25,10 +25,10 @@ namespace VoxelEngine
             // Reset faces
             var chunkYorg = _chunk.ToY;
             var chunkMaxY = _chunk.ToY;
-            for (var y = _chunk.FromY; y < _chunk.ToY; y++) {
+            for (var y = 0; y < blocks.GetLength(1); y++) {
                 var empty = true;
-                for (var x = _chunk.FromX; x < _chunk.ToX; x++) {
-                    for (var z = _chunk.FromZ; z < _chunk.ToZ; z++) {
+                for (var x = 0; x < blocks.GetLength(0); x++) {
+                    for (var z = 0; z < blocks.GetLength(2); z++) {
                         if (blocks [x, y, z] != 0) {
                             blocks [x, y, z] &= ~(1 << 0);
                             blocks [x, y, z] &= ~(1 << 1);
@@ -46,9 +46,9 @@ namespace VoxelEngine
             }
 
             // Check blocks if occluded & set block data accordingly
-            for (var y = _chunk.FromY; y < _chunk.ToY; y++) {
-                for (var x = _chunk.FromX; x < _chunk.ToX; x++) {
-                    for (var z = _chunk.FromZ; z < _chunk.ToZ; z++) {
+            for (var y = 0; y < blocks.GetLength(1); y++) {
+                for (var x = 0; x < blocks.GetLength(0); x++) {
+                    for (var z = 0; z < blocks.GetLength(2); z++) {
                         if ((blocks [x, y, z] >> 8) == 0) {
                             continue; // Skip empty blocks_
                         }
@@ -66,27 +66,27 @@ namespace VoxelEngine
                             }
                         }
                         if (_chunk.Type is Chunk.TypeObj or Chunk.TypeFf) {
-                            if(y > _chunk.ToY ) {
+                            if(y > blocks.GetLength(1) ) {
                                 if (blocks [x, y - 1, z] != 0) {
                                     below = 1;
                                     blocks [x, y - 1, z] = blocks [x, y, z] | 0x80;
                                 }
                             }
-                            if(x < _chunk.ToX-1) {
+                            if(x < blocks.GetLength(0)-1) {
                                 if (blocks [x + 1, y, z] != 0) {
                                     right = 1;
                                     blocks [x, y, z] = blocks [x, y, z] | 0x4;
                                 }
                             }
                         }
-                        if (y < _chunk.ToY - 1) {
+                        if (y < blocks.GetLength(1) - 1) {
                             if (blocks [x, y + 1, z] != 0) {
                                 above = 1;
                                 blocks [x, y, z] = blocks [x, y, z] | 0x2;
                             }
                         }
                         if (_chunk.Type is Chunk.TypeObj or Chunk.TypeFf) {
-                            if(z < _chunk.ToZ - 1) {
+                            if(z < blocks.GetLength(2) - 1) {
                                 if (blocks [x, y, z + 1] != 0) {
                                     front = 1;
                                     blocks [x, y, z] = blocks [x, y, z] | 0x1;
@@ -107,7 +107,7 @@ namespace VoxelEngine
                                 var maxX = 0;
                                 var maxZ = 0;
 
-                                for(var x_ = x; x_ < _chunk.ToX; x_++) {
+                                for(var x_ = x; x_ < blocks.GetLength(0); x_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x_, y, z] & 0x80) == 0 && SameColor (blocks [x_, y, z], blocks [x, y, z])) {
                                         maxX++;
@@ -115,7 +115,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpZ = 0;
-                                    for (var z_ = z; z_ < _chunk.ToZ; z_++) {
+                                    for (var z_ = z; z_ < blocks.GetLength(2); z_++) {
                                         if ((blocks [x_, y, z_] & 0x80) == 0 && SameColor (blocks [x_, y, z_], blocks [x, y, z])) {
                                             tmpZ++;
                                         } else {
@@ -136,9 +136,9 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize- _blockSize, z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3 (x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize));
-                                vertices.Add ( new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ)) );
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize- _blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3 (x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add ( new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ))  - _chunk.LocalPosOffset);
 
                                 // Add triangle indeces
                                 tri.Add(idx+2);
@@ -147,9 +147,9 @@ namespace VoxelEngine
 
                                 idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize-_blockSize, z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize-_blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
 
                                 tri.Add(idx+2);
                                 tri.Add(idx+1);
@@ -171,7 +171,7 @@ namespace VoxelEngine
                                 var maxX = 0;
                                 var maxZ = 0;
 
-                                for (var x_ = x; x_ < _chunk.ToX; x_++) {
+                                for (var x_ = x; x_ < blocks.GetLength(0); x_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x_, y, z] & 0x2) == 0 && SameColor (blocks [x_, y, z], blocks [x, y, z])) {
                                         maxX++;
@@ -179,7 +179,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpZ = 0;
-                                    for (var z_ = z; z_ < _chunk.ToZ; z_++) {
+                                    for (var z_ = z; z_ < blocks.GetLength(2); z_++) {
                                         if ((blocks [x_, y, z_] & 0x2) == 0 && SameColor (blocks [x_, y, z_], blocks [x, y, z])) {
                                             tmpZ++;
                                         } else {
@@ -200,9 +200,9 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3 (x * _blockSize - _blockSize, y * _blockSize, z * _blockSize - _blockSize));
-                                vertices.Add ( new Vector3(x * _blockSize - _blockSize, y * _blockSize, z * _blockSize + (_blockSize * maxZ)) );
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3 (x * _blockSize - _blockSize, y * _blockSize, z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add ( new Vector3(x * _blockSize - _blockSize, y * _blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
 
                                 // Add triangle indeces
                                 tri.Add(idx);
@@ -211,9 +211,9 @@ namespace VoxelEngine
 
                                 idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize, z * _blockSize - _blockSize ));
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
 
 
                                 tri.Add(idx);
@@ -236,7 +236,7 @@ namespace VoxelEngine
                                 var maxX = 0;
                                 var maxY = 0;
 
-                                for (var x_ = x; x_ < _chunk.ToX; x_++) {
+                                for (var x_ = x; x_ < blocks.GetLength(0); x_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x_, y, z] & 0x10) == 0 && SameColor (blocks [x_, y, z], blocks [x, y, z])) {
                                         maxX++;
@@ -244,7 +244,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpY = 0;
-                                    for (var y_ = y; y_ < _chunk.ToY; y_++) {
+                                    for (var y_ = y; y_ < blocks.GetLength(1); y_++) {
                                         if ((blocks [x_, y_, z] & 0x10) == 0 && SameColor (blocks [x_, y_, z], blocks [x, y, z])) {
                                             tmpY++;
                                         } else {
@@ -265,9 +265,9 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize));
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize - _blockSize));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
 
                                 tri.Add(idx);
                                 tri.Add(idx+1);
@@ -276,9 +276,9 @@ namespace VoxelEngine
                                 idx = vertices.Count;
 
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize));
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
 
                                 tri.Add(idx);
                                 tri.Add(idx+1);
@@ -300,7 +300,7 @@ namespace VoxelEngine
                                 var maxX = 0;
                                 var maxY = 0;
 
-                                for (var x_ = x; x_ < _chunk.ToX; x_++) {
+                                for (var x_ = x; x_ < blocks.GetLength(0); x_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x_, y, z] & 0x1) == 0 && SameColor (blocks [x_, y, z], blocks [x, y, z])) {
                                         maxX++;
@@ -308,7 +308,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpY = 0;
-                                    for (var y_ = y; y_ < _chunk.ToY; y_++) {
+                                    for (var y_ = y; y_ < blocks.GetLength(1); y_++) {
                                         if ((blocks [x_, y_, z] & 0x1) == 0 && SameColor (blocks [x_, y_, z], blocks [x, y, z])) {
                                             tmpY++;
                                         } else {
@@ -329,18 +329,18 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize));
-                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize ));
-                                vertices.Add (new Vector3( x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize ));
+                                vertices.Add (new Vector3(x * _blockSize + (_blockSize * maxX), y * _blockSize + (_blockSize * maxY), z * _blockSize) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3( x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize ) - _chunk.LocalPosOffset);
 
                                 tri.Add(idx);
                                 tri.Add(idx+1);
                                 tri.Add(idx+2);
 
                                 idx = vertices.Count;
-                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize ));
-                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize ));
-                                vertices.Add (new Vector3( x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize ));
+                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3( x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3( x * _blockSize + (_blockSize * maxX), y * _blockSize - _blockSize, z * _blockSize ) - _chunk.LocalPosOffset);
 
                                 // Add triangle indeces
                                 tri.Add(idx);
@@ -362,7 +362,7 @@ namespace VoxelEngine
                                 var maxZ = 0;
                                 var maxY = 0;
 
-                                for (var z_ = z; z_ < _chunk.ToZ; z_++) {
+                                for (var z_ = z; z_ < blocks.GetLength(2); z_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x, y, z_] & 0x8) == 0 && SameColor (blocks [x, y, z_], blocks [x, y, z])) {
                                         maxZ++;
@@ -370,7 +370,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpY = 0;
-                                    for (var y_ = y; y_ < _chunk.ToY; y_++) {
+                                    for (var y_ = y; y_ < blocks.GetLength(1); y_++) {
                                         if ((blocks [x, y_, z_] & 0x8) == 0 && SameColor (blocks [x, y_, z_], blocks [x, y, z])) {
                                             tmpY++;
                                         } else {
@@ -391,18 +391,18 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)));
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
 
                                 tri.Add(idx);
                                 tri.Add(idx+1);
                                 tri.Add(idx+2);
 
                                 idx = vertices.Count;
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize));
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize - _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize) - _chunk.LocalPosOffset);
 
                                 // Add triangle indeces
                                 tri.Add(idx);
@@ -425,7 +425,7 @@ namespace VoxelEngine
                                 var maxZ = 0;
                                 var maxY = 0;
 
-                                for (var z_ = z; z_ < _chunk.ToZ; z_++) {
+                                for (var z_ = z; z_ < blocks.GetLength(2); z_++) {
                                     // Check not drawn + same color
                                     if ((blocks [x, y, z_] & 0x4) == 0 && SameColor (blocks [x, y, z_], blocks [x, y, z])) {
                                         maxZ++;
@@ -433,7 +433,7 @@ namespace VoxelEngine
                                         break;
                                     }
                                     var tmpY = 0;
-                                    for (var y_ = y; y_ < _chunk.ToY; y_++) {
+                                    for (var y_ = y; y_ < blocks.GetLength(1); y_++) {
                                         if ((blocks [x, y_, z_] & 0x4) == 0 && SameColor (blocks [x, y_, z_], blocks [x, y, z])) {
                                             tmpY++;
                                         } else {
@@ -454,17 +454,17 @@ namespace VoxelEngine
 
                                 var idx = vertices.Count;
 
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ) ));
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize + (_blockSize * maxZ) ) - _chunk.LocalPosOffset);
                                 tri.Add(idx);
                                 tri.Add(idx+1);
                                 tri.Add(idx+2);
 
                                 idx = vertices.Count;
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)));
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ));
-                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize ));
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize + (_blockSize * maxZ)) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize - _blockSize, z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
+                                vertices.Add (new Vector3(x * _blockSize, y * _blockSize + (_blockSize * maxY), z * _blockSize - _blockSize ) - _chunk.LocalPosOffset);
 
                                 // Add triangle indeces
                                 tri.Add(idx);
